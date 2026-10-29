@@ -1,0 +1,473 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Instituciones de debate</title>
+<meta name="description" content="Listado de instituciones y clubes de debate, leído en directo de la hoja oficial, con buzón de propuestas de cambio.">
+<style>
+  :root {
+    --bg: #f7f7f5; --surface: #ffffff; --text: #1d1d1b; --muted: #6b6b66;
+    --border: #e2e2dc; --accent: #1f5f8b; --accent-text: #ffffff;
+    --ok: #2f7d4f; --warn: #a15c00; --warn-bg: #fff4e0; --err: #b3261e;
+    --chip: #eef3f7;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #141413; --surface: #1e1e1c; --text: #ececea; --muted: #a3a39c;
+      --border: #34342f; --accent: #6aa9d6; --accent-text: #0e1b24;
+      --ok: #6cc28f; --warn: #f0b35a; --warn-bg: #3a2c14; --err: #f28b82;
+      --chip: #24303a;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  header, main { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+  header { padding-top: 28px; }
+  h1 { font-size: 1.6rem; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 16px; font-size: .9rem; }
+  .sub a { color: var(--accent); }
+  .stats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 12px; min-width: 110px; }
+  .stat b { display: block; font-size: 1.3rem; }
+  .stat span { color: var(--muted); font-size: .8rem; }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+  input, select, textarea, button { font: inherit; color: inherit; }
+  input[type=search], select, .field input, .field textarea, .field select {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; }
+  input[type=search] { flex: 1 1 260px; min-width: 0; }
+  label.check { display: inline-flex; gap: 6px; align-items: center; font-size: .9rem; color: var(--muted); }
+  button { cursor: pointer; border-radius: 6px; padding: 7px 12px; border: 1px solid var(--border);
+    background: var(--surface); }
+  button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+  button.link { border: 0; background: none; color: var(--accent); padding: 2px 4px; }
+  .status { font-size: .85rem; color: var(--muted); margin-bottom: 8px; min-height: 1.2em; }
+  .status.error { color: var(--err); }
+  .table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+  table { border-collapse: collapse; width: 100%; }
+  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { position: sticky; top: 0; background: var(--surface); font-size: .8rem; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .03em; cursor: pointer; white-space: nowrap; }
+  th[aria-sort] { color: var(--text); }
+  tr:last-child td { border-bottom: 0; }
+  td.code { font-weight: 600; white-space: nowrap; }
+  .chip { display: inline-block; font-size: .75rem; padding: 1px 7px; border-radius: 99px;
+    background: var(--chip); margin: 1px 2px 1px 0; white-space: nowrap; }
+  .chip.ok { color: var(--ok); }
+  .chip.warn { color: var(--warn); background: var(--warn-bg); }
+  .empty { color: var(--muted); font-style: italic; }
+  .muted { color: var(--muted); }
+  footer { max-width: 1200px; margin: 24px auto; padding: 0 16px; color: var(--muted); font-size: .8rem; }
+
+  /* Buzón */
+  dialog { border: 1px solid var(--border); border-radius: 10px; padding: 0; width: min(640px, calc(100vw - 32px));
+    background: var(--surface); color: var(--text); }
+  dialog::backdrop { background: rgba(0,0,0,.45); }
+  .dlg-head { padding: 16px 20px 0; }
+  .dlg-head h2 { margin: 0 0 4px; font-size: 1.2rem; }
+  form.proposal { padding: 12px 20px 20px; display: grid; gap: 12px; }
+  .field { display: grid; gap: 4px; }
+  .field > span { font-size: .85rem; color: var(--muted); }
+  .field textarea { min-height: 80px; resize: vertical; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .newrow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .actions { display: flex; gap: 8px; justify-content: flex-end; align-items: center; flex-wrap: wrap; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .notice { font-size: .85rem; padding: 8px 10px; border-radius: 6px; background: var(--warn-bg); color: var(--warn); }
+  .result { font-size: .9rem; }
+  .result.ok { color: var(--ok); } .result.error { color: var(--err); }
+  @media (max-width: 640px) {
+    .row2, .newrow { grid-template-columns: 1fr; }
+    th, td { padding: 6px 8px; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Instituciones de debate</h1>
+  <p class="sub">Datos leídos en directo de la <a id="sheet-link" target="_blank" rel="noopener">hoja oficial</a>.
+    Si ves un error o falta una institución, usa <b>Proponer cambio</b>: la propuesta llega a la hoja como pendiente de revisión, no se aplica sola.</p>
+  <div class="stats" id="stats"></div>
+  <div class="controls">
+    <input type="search" id="q" placeholder="Buscar código, institución, club, observaciones…" aria-label="Buscar">
+    <select id="f-pais" aria-label="País"><option value="">Todos los países</option></select>
+    <select id="f-ver" aria-label="Verificado">
+      <option value="">Verificado: todos</option><option value="1">Solo verificados</option><option value="0">Solo no verificados</option>
+    </select>
+    <select id="f-esc" aria-label="Escolar">
+      <option value="">Escolar y universitario</option><option value="1">Solo escolares</option><option value="0">Solo no escolares</option>
+    </select>
+    <label class="check"><input type="checkbox" id="f-issues"> Solo con incidencias</label>
+    <button class="primary" id="btn-new">+ Proponer institución nueva</button>
+  </div>
+  <div class="status" id="status">Cargando datos…</div>
+</header>
+<main>
+  <div class="table-wrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
+</main>
+<footer>
+  Las “incidencias” son avisos automáticos (código repetido, país vacío, espacios o caracteres invisibles…), no errores confirmados.
+  La página se actualiza sola cada pocos minutos y al volver a la pestaña.
+</footer>
+
+<dialog id="dlg">
+  <div class="dlg-head">
+    <h2 id="dlg-title">Proponer cambio</h2>
+    <p class="sub" style="margin:0">Cuanto más concreta la fuente (web oficial del club, acta, persona de contacto), más fácil es aceptarla.</p>
+  </div>
+  <form class="proposal" id="form" method="dialog" novalidate>
+    <p class="notice" id="no-endpoint" hidden>El buzón aún no está conectado (falta <code>PROPOSALS_URL</code> en <code>config.js</code>). Puedes rellenarlo, pero no se enviará.</p>
+    <div class="row2">
+      <label class="field"><span>Tipo de propuesta</span>
+        <select name="tipo" id="p-tipo">
+          <option>Modificación</option><option>Alta</option><option>Baja</option><option>Duplicado</option><option>Otro</option>
+        </select>
+      </label>
+      <label class="field" id="w-codigo"><span>Código afectado</span>
+        <input name="codigo" id="p-codigo" list="codes" autocomplete="off">
+      </label>
+    </div>
+    <div id="w-mod" class="row2">
+      <label class="field"><span>Campo</span><select name="campo" id="p-campo"></select></label>
+      <label class="field"><span>Valor actual</span><input name="actual" id="p-actual" readonly></label>
+    </div>
+    <label class="field" id="w-prop"><span id="l-prop">Valor propuesto</span>
+      <textarea name="propuesto" id="p-prop"></textarea>
+    </label>
+    <div id="w-new" class="newrow" hidden></div>
+    <label class="field"><span>Justificación o fuente</span>
+      <textarea name="justificacion" id="p-just" placeholder="Ej.: web oficial del club, cambio de nombre aprobado en 2026, duplicado de…"></textarea>
+    </label>
+    <div class="row2">
+      <label class="field"><span>Tu nombre (opcional)</span><input name="nombre" autocomplete="name"></label>
+      <label class="field"><span>Tu email (opcional, por si hay dudas)</span><input name="email" type="email" autocomplete="email"></label>
+    </div>
+    <div class="hp" aria-hidden="true"><label>Web <input name="website" tabindex="-1" autocomplete="off"></label></div>
+    <div class="actions">
+      <span class="result" id="result" role="status"></span>
+      <button type="button" id="btn-cancel">Cancelar</button>
+      <button type="submit" class="primary" id="btn-send">Enviar propuesta</button>
+    </div>
+  </form>
+</dialog>
+<datalist id="codes"></datalist>
+
+<script src="config.js"></script>
+<script>
+(() => {
+  const C = window.CONFIG;
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const norm = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const INVISIBLE = /[\u00a0\u200b-\u200f\u2028-\u202f\u2060-\u206f\ufeff]/;
+
+  $('#sheet-link').href = `https://docs.google.com/spreadsheets/d/${C.SHEET_ID}/edit`;
+
+  let headers = [];     // nombres de columna tal como están en la hoja
+  let rows = [];        // [{cells: [...], issues: [...]}]
+  let sort = { col: 0, dir: 1 };
+  let roles = {};       // índice de las columnas que el visor usa de forma especial
+
+  // ---------- Lectura de la hoja (JSONP de la API de visualización) ----------
+  let reqId = 0;
+  function loadSheet() {
+    return new Promise((resolve, reject) => {
+      const id = ++reqId;
+      const cb = `__sheetCb${id}`;
+      const s = document.createElement('script');
+      const done = (fn, v) => { clearTimeout(t); delete window[cb]; s.remove(); fn(v); };
+      const t = setTimeout(() => done(reject, new Error('La hoja no responde. ¿Está compartida como “cualquiera con el enlace puede ver”?')), 15000);
+      window[cb] = (resp) => {
+        if (resp.status === 'error') {
+          const msg = (resp.errors || []).map((e) => e.detailed_message || e.message).join('; ');
+          return done(reject, new Error(msg || 'Error leyendo la hoja'));
+        }
+        done(resolve, resp.table);
+      };
+      const tqx = `out:json;responseHandler:${cb};reqId:${id}`;
+      s.src = `https://docs.google.com/spreadsheets/d/${C.SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(C.SHEET_NAME)}&headers=1&tqx=${encodeURIComponent(tqx)}&_=${Date.now()}`;
+      s.onerror = () => done(reject, new Error('No se pudo contactar con Google Sheets.'));
+      document.head.appendChild(s);
+    });
+  }
+
+  function cellValue(c) {
+    if (!c) return '';
+    if (typeof c.v === 'boolean') return c.v;
+    if (c.v == null) return c.f ?? '';
+    return c.f ?? c.v;
+  }
+
+  function ingest(table) {
+    // Las columnas sin cabecera (C, D… vacías a la derecha) se descartan.
+    const keep = [];
+    headers = [];
+    table.cols.forEach((col, i) => {
+      const label = (col.label || '').trim();
+      if (label) { keep.push(i); headers.push(label); }
+    });
+    const find = (re) => headers.findIndex((h) => re.test(norm(h)));
+    roles = {
+      code: find(/codigo/) >= 0 ? find(/codigo/) : 0,
+      inst: find(/^institucion/),
+      pais: find(/^pais/),
+      ver: find(/verificad/),
+      esc: find(/escolar/),
+    };
+    rows = table.rows
+      .map((r) => keep.map((i) => cellValue(r.c[i])))
+      .filter((cells) => cells.some((v) => typeof v === 'string' && v.trim() && v.trim() !== '-'))
+      .map((cells) => ({ cells, issues: [] }));
+    computeIssues();
+  }
+
+  function computeIssues() {
+    const byCode = new Map();
+    rows.forEach((r) => {
+      const k = norm(String(r.cells[roles.code]).trim());
+      if (k) byCode.set(k, (byCode.get(k) || 0) + 1);
+    });
+    rows.forEach((r) => {
+      const iss = [];
+      const code = String(r.cells[roles.code]).trim();
+      if (!code) iss.push('Sin código');
+      else if (byCode.get(norm(code)) > 1) iss.push('Código repetido');
+      if (roles.pais >= 0 && !String(r.cells[roles.pais]).trim()) iss.push('Sin país');
+      if (roles.inst >= 0 && !String(r.cells[roles.inst]).trim()) iss.push('Sin institución');
+      const texts = r.cells.filter((v) => typeof v === 'string');
+      if (texts.some((v) => INVISIBLE.test(v))) iss.push('Carácter invisible');
+      else if (texts.some((v) => v !== v.trim() || /\s{2,}/.test(v))) iss.push('Espacios sobrantes');
+      r.issues = iss;
+    });
+  }
+
+  // ---------- Pintado ----------
+  function fillFilters() {
+    const sel = $('#f-pais');
+    const cur = sel.value;
+    const paises = [...new Set(rows.map((r) => String(r.cells[roles.pais] ?? '').trim()))].sort((a, b) => a.localeCompare(b, 'es'));
+    sel.innerHTML = '<option value="">Todos los países</option>' +
+      paises.map((p) => `<option value="${p ? esc(p) : '__none__'}">${p ? esc(p) : '(sin país)'}</option>`).join('');
+    sel.value = cur === '__none__' ? (paises.includes('') ? cur : '') : (paises.includes(cur) ? cur : '');
+    $('#f-ver').disabled = roles.ver < 0;
+    $('#f-esc').disabled = roles.esc < 0;
+    $('#codes').innerHTML = [...new Set(rows.map((r) => String(r.cells[roles.code]).trim()).filter(Boolean))]
+      .map((c) => `<option value="${esc(c)}">`).join('');
+  }
+
+  function filtered() {
+    const q = norm($('#q').value.trim());
+    const pais = $('#f-pais').value, ver = $('#f-ver').value, escol = $('#f-esc').value;
+    const onlyIssues = $('#f-issues').checked;
+    return rows.filter((r) => {
+      if (pais && String(r.cells[roles.pais] ?? '').trim() !== (pais === '__none__' ? '' : pais)) return false;
+      if (ver && (r.cells[roles.ver] === true) !== (ver === '1')) return false;
+      if (escol && (r.cells[roles.esc] === true) !== (escol === '1')) return false;
+      if (onlyIssues && !r.issues.length) return false;
+      if (q && !r.cells.some((v) => typeof v === 'string' && norm(v).includes(q))) return false;
+      return true;
+    });
+  }
+
+  function renderStats(list) {
+    const paises = new Set(rows.map((r) => String(r.cells[roles.pais] ?? '').trim()).filter(Boolean));
+    const ver = roles.ver >= 0 ? rows.filter((r) => r.cells[roles.ver] === true).length : null;
+    const iss = rows.filter((r) => r.issues.length).length;
+    const items = [
+      [rows.length, 'registros'],
+      [paises.size, 'países'],
+      ...(ver != null ? [[`${ver}`, `verificados (${Math.round(100 * ver / (rows.length || 1))} %)`]] : []),
+      [iss, 'con incidencias'],
+      ...(list.length !== rows.length ? [[list.length, 'mostrados']] : []),
+    ];
+    $('#stats').innerHTML = items.map(([n, l]) => `<div class="stat"><b>${esc(n)}</b><span>${esc(l)}</span></div>`).join('');
+  }
+
+  function renderCell(v, i) {
+    if (typeof v === 'boolean') {
+      return v ? `<span class="chip ok">Sí</span>` : `<span class="muted">No</span>`;
+    }
+    const s = String(v);
+    if (!s.trim() || s.trim() === '-') return `<span class="empty">—</span>`;
+    return esc(s);
+  }
+
+  function render() {
+    const list = filtered().slice().sort((a, b) => {
+      const x = a.cells[sort.col], y = b.cells[sort.col];
+      if (typeof x === 'boolean' || typeof y === 'boolean') return (Number(y) - Number(x)) * sort.dir;
+      const xs = String(x ?? '').trim(), ys = String(y ?? '').trim();
+      if (!xs !== !ys) return xs ? -1 : 1; // vacíos al final
+      return xs.localeCompare(ys, 'es', { sensitivity: 'base' }) * sort.dir;
+    });
+    $('#tbl thead').innerHTML = '<tr>' + headers.map((h, i) =>
+      `<th data-col="${i}" ${i === sort.col ? `aria-sort="${sort.dir > 0 ? 'ascending' : 'descending'}"` : ''}>${esc(h)}${i === sort.col ? (sort.dir > 0 ? ' ▲' : ' ▼') : ''}</th>`
+    ).join('') + '<th>Avisos</th><th></th></tr>';
+    $('#tbl tbody').innerHTML = list.length ? list.map((r) => {
+      const idx = rows.indexOf(r);
+      return '<tr>' + r.cells.map((v, i) => `<td${i === roles.code ? ' class="code"' : ''}>${renderCell(v, i)}</td>`).join('') +
+        `<td>${r.issues.map((x) => `<span class="chip warn">${esc(x)}</span>`).join('')}</td>` +
+        `<td><button class="link" data-row="${idx}">Proponer cambio</button></td></tr>`;
+    }).join('') : `<tr><td colspan="${headers.length + 2}" class="empty">Ningún registro coincide con los filtros.</td></tr>`;
+    renderStats(list);
+  }
+
+  $('#tbl thead').addEventListener('click', (e) => {
+    const th = e.target.closest('th[data-col]');
+    if (!th) return;
+    const c = Number(th.dataset.col);
+    sort = { col: c, dir: sort.col === c ? -sort.dir : 1 };
+    render();
+  });
+  $('#tbl tbody').addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-row]');
+    if (b) openForm('Modificación', rows[Number(b.dataset.row)]);
+  });
+  ['#q', '#f-pais', '#f-ver', '#f-esc', '#f-issues'].forEach((s) => $(s).addEventListener('input', render));
+
+  // ---------- Recarga automática ----------
+  let loading = false, lastLoad = 0;
+  async function refresh() {
+    if (loading) return;
+    loading = true;
+    try {
+      ingest(await loadSheet());
+      lastLoad = Date.now();
+      fillFilters();
+      render();
+      const st = $('#status');
+      st.classList.remove('error');
+      st.textContent = `Actualizado a las ${new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}.`;
+    } catch (err) {
+      const st = $('#status');
+      st.classList.add('error');
+      st.textContent = (rows.length ? 'No se pudo actualizar (se muestran los últimos datos): ' : '') + err.message;
+    } finally {
+      loading = false;
+    }
+  }
+  refresh();
+  setInterval(refresh, Math.max(1, C.REFRESH_MINUTES) * 60000);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && Date.now() - lastLoad > 60000) refresh();
+  });
+
+  // ---------- Buzón de propuestas ----------
+  const dlg = $('#dlg'), form = $('#form');
+  let currentRow = null;
+
+  function rowByCode(code) {
+    const k = norm(String(code).trim());
+    return rows.find((r) => norm(String(r.cells[roles.code]).trim()) === k) || null;
+  }
+
+  function syncForm() {
+    const tipo = $('#p-tipo').value;
+    const isNew = tipo === 'Alta';
+    $('#w-codigo').hidden = isNew;
+    $('#w-mod').hidden = tipo !== 'Modificación';
+    $('#w-new').hidden = !isNew;
+    $('#w-prop').hidden = isNew;
+    $('#l-prop').textContent = {
+      'Modificación': 'Valor propuesto',
+      'Baja': 'Motivo de la baja',
+      'Duplicado': '¿De qué código es duplicado? ¿Cuál debería quedarse?',
+      'Otro': 'Describe la propuesta',
+    }[tipo] || 'Valor propuesto';
+    const campo = Number($('#p-campo').value);
+    $('#p-actual').value = currentRow && tipo === 'Modificación' && campo >= 0 ? fmt(currentRow.cells[campo]) : '';
+    $('#dlg-title').textContent = isNew ? 'Proponer institución nueva' : 'Proponer cambio';
+  }
+  const fmt = (v) => (typeof v === 'boolean' ? (v ? 'Sí' : 'No') : String(v ?? ''));
+
+  function openForm(tipo, row) {
+    form.reset();
+    $('#result').textContent = '';
+    $('#result').className = 'result';
+    $('#no-endpoint').hidden = !!C.PROPOSALS_URL;
+    $('#btn-send').disabled = false;
+    currentRow = row || null;
+    $('#p-tipo').value = tipo;
+    $('#p-codigo').value = row ? String(row.cells[roles.code]).trim() : '';
+    $('#p-campo').innerHTML = headers.map((h, i) => `<option value="${i}">${esc(h)}</option>`).join('') +
+      '<option value="-1">Varios campos</option>';
+    $('#w-new').innerHTML = headers.map((h, i) => (i === roles.ver ? '' :
+      i === roles.esc
+        ? `<label class="field"><span>${esc(h)}</span><select data-new="${i}"><option value="">No sé</option><option>Sí</option><option>No</option></select></label>`
+        : `<label class="field"><span>${esc(h)}</span><input data-new="${i}"></label>`)).join('');
+    syncForm();
+    dlg.showModal();
+  }
+
+  $('#btn-new').addEventListener('click', () => openForm('Alta', null));
+  $('#btn-cancel').addEventListener('click', () => dlg.close());
+  $('#p-tipo').addEventListener('change', syncForm);
+  $('#p-campo').addEventListener('change', syncForm);
+  $('#p-codigo').addEventListener('change', () => { currentRow = rowByCode($('#p-codigo').value); syncForm(); });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const fd = new FormData(form);
+    const tipo = fd.get('tipo');
+    const payload = {
+      tipo,
+      codigo: fd.get('codigo') || '',
+      campo: '', actual: '', propuesto: fd.get('propuesto') || '',
+      justificacion: fd.get('justificacion') || '',
+      nombre: fd.get('nombre') || '', email: fd.get('email') || '',
+      website: fd.get('website') || '',
+      fila: {},
+    };
+    if (tipo === 'Modificación') {
+      const i = Number($('#p-campo').value);
+      payload.campo = i >= 0 ? headers[i] : 'Varios';
+      payload.actual = $('#p-actual').value;
+    }
+    if (tipo === 'Alta') {
+      const parts = [];
+      form.querySelectorAll('[data-new]').forEach((el) => {
+        const v = el.value.trim();
+        if (v) { payload.fila[headers[el.dataset.new]] = v; parts.push(`${headers[el.dataset.new]}: ${v}`); }
+      });
+      payload.codigo = payload.fila[headers[roles.code]] || '';
+      payload.propuesto = parts.join(' | ');
+    } else if (currentRow) {
+      headers.forEach((h, i) => { payload.fila[h] = fmt(currentRow.cells[i]); });
+    }
+
+    const res = $('#result');
+    if (!payload.propuesto.trim() && !payload.justificacion.trim()) {
+      res.className = 'result error'; res.textContent = 'Escribe al menos la propuesta o la justificación.'; return;
+    }
+    if (tipo !== 'Alta' && !payload.codigo.trim()) {
+      res.className = 'result error'; res.textContent = 'Indica el código afectado.'; return;
+    }
+    if (!C.PROPOSALS_URL) {
+      res.className = 'result error'; res.textContent = 'El buzón no está conectado todavía.'; return;
+    }
+    $('#btn-send').disabled = true;
+    res.className = 'result'; res.textContent = 'Enviando…';
+    try {
+      // text/plain evita la petición previa CORS, que Apps Script no admite.
+      const r = await fetch(C.PROPOSALS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload),
+      });
+      const out = await r.json();
+      if (!out.ok) throw new Error(out.error || 'Error desconocido');
+      res.className = 'result ok';
+      res.textContent = 'Recibida. Gracias: queda pendiente de revisión.';
+      setTimeout(() => dlg.close(), 1800);
+    } catch (err) {
+      res.className = 'result error';
+      res.textContent = 'No se pudo enviar: ' + err.message;
+      $('#btn-send').disabled = false;
+    }
+  });
+})();
+</script>
+</body>
+</html>
