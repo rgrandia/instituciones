@@ -11,6 +11,18 @@ pestaña **Propuestas** de esa misma hoja.
 - Las estadísticas (totales, % verificados y escolares, registros por país) se calculan en la página a partir de LISTA y siguen los filtros activos. La hoja no necesita pestañas de estadísticas.
 - El botón **Copiar para Tabbycat** copia «Institución, Siglas del club», una línea por registro mostrado, para importar instituciones en Tabbycat (sustituye a la antigua pestaña «Formato para Tab»).
 
+## Diseño
+
+Sigue el estilo de [cmudebarcelona.org](https://cmudebarcelona.org/): tipografías Outfit y
+Playfair Display, cabecera fija, portada oscura, botones redondeados e iconos Font Awesome 6.4.
+Los colores están en variables al principio de `index.html` (`--color-primary`,
+`--color-secondary`, `--color-dark`…); son aproximados hasta copiar los de su `styles.css`.
+
+Logo: sube el SVG del panot como `logo.svg` en la raíz del repo y aparecerá en la cabecera.
+Mientras no exista, se muestra un icono provisional.
+
+Contacto público: `barcelona@cmudebarcelona.org` (cabecera, bloque de contacto, pie y buzón).
+
 ## Archivos
 
 | Archivo | Qué es |

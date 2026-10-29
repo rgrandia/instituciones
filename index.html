@@ -3,140 +3,347 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Instituciones de debate</title>
-<meta name="description" content="Listado de instituciones y clubes de debate, leído en directo de la hoja oficial, con buzón de propuestas de cambio.">
+<title>Instituciones de debate · CMUDE BCN</title>
+<meta name="description" content="Directorio de instituciones y clubes de debate en español de CMUDE Barcelona 2027, con buzón para proponer altas y correcciones.">
+<meta property="og:title" content="Instituciones de debate · CMUDE Barcelona 2027">
+<meta property="og:description" content="Directorio de instituciones y clubes de debate en español, con buzón de correcciones.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
+  /* Paleta: tipografías y estructura de cmudebarcelona.org. Los colores son
+     aproximados; para clavarlos, copia aquí las variables de su styles.css. */
   :root {
-    --bg: #f7f7f5; --surface: #ffffff; --text: #1d1d1b; --muted: #6b6b66;
-    --border: #e2e2dc; --accent: #1f5f8b; --accent-text: #ffffff;
-    --ok: #2f7d4f; --warn: #a15c00; --warn-bg: #fff4e0; --err: #b3261e;
-    --chip: #eef3f7;
+    --font-main: 'Outfit', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --font-header: 'Playfair Display', Georgia, serif;
+    --color-primary: #d9622b;        /* naranja mediterráneo: acciones principales */
+    --color-primary-dark: #b84f1f;
+    --color-secondary: #2f5d8c;      /* azul */
+    --color-secondary-dark: #244a70;
+    --color-dark: #1b2a41;           /* cabecera de portada y pie */
+    --color-slate: #364463;
+    --color-green: #436d39;
+    --bg: #f6f3ee; --surface: #ffffff; --text: #1d2433; --muted: #6a768c;
+    --border: #e6e0d6; --chip: #eef1f6;
+    --ok: #2f7d4f; --warn: #a15c00; --warn-bg: #fff3e0; --err: #b3261e;
+    --on-dark: #ffffff; --on-dark-muted: rgba(255,255,255,.75);
+    --shadow: 0 10px 30px rgba(27, 42, 65, .08);
+    --radius: 14px;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: #141413; --surface: #1e1e1c; --text: #ececea; --muted: #a3a39c;
-      --border: #34342f; --accent: #6aa9d6; --accent-text: #0e1b24;
+      --bg: #11161f; --surface: #19202c; --text: #e9edf3; --muted: #9aa5b8;
+      --border: #2b3445; --chip: #232c3b;
+      --color-primary: #ef7a45; --color-primary-dark: #f08d5e;
+      --color-secondary: #7fa9d6; --color-secondary-dark: #9bbce0;
+      --color-dark: #0b1019;
       --ok: #6cc28f; --warn: #f0b35a; --warn-bg: #3a2c14; --err: #f28b82;
-      --chip: #24303a;
+      --shadow: 0 10px 30px rgba(0, 0, 0, .35);
     }
   }
+  :root[data-theme="dark"] {
+    --bg: #11161f; --surface: #19202c; --text: #e9edf3; --muted: #9aa5b8;
+    --border: #2b3445; --chip: #232c3b;
+    --color-primary: #ef7a45; --color-primary-dark: #f08d5e;
+    --color-secondary: #7fa9d6; --color-secondary-dark: #9bbce0;
+    --color-dark: #0b1019;
+    --ok: #6cc28f; --warn: #f0b35a; --warn-bg: #3a2c14; --err: #f28b82;
+    --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+  }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body { margin: 0; background: var(--bg); color: var(--text);
-    font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-  header, main { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
-  header { padding-top: 28px; }
-  h1 { font-size: 1.6rem; margin: 0 0 4px; }
-  .sub { color: var(--muted); margin: 0 0 16px; font-size: .9rem; }
-  .sub a { color: var(--accent); }
-  .stats { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
-    padding: 8px 12px; min-width: 110px; }
-  .stat b { display: block; font-size: 1.3rem; }
-  .stat span { color: var(--muted); font-size: .8rem; }
-  details.charts { background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
-    padding: 10px 14px; margin-bottom: 16px; }
-  details.charts summary { cursor: pointer; font-weight: 600; }
-  .bars { display: grid; grid-template-columns: minmax(90px, max-content) 1fr; gap: 6px 10px;
-    margin: 12px 0 4px; align-items: center; font-size: .85rem; }
-  .bars .lbl { text-align: right; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .bars .track { display: flex; align-items: center; gap: 8px; min-width: 0; cursor: pointer; padding: 3px 0; }
-  .bars .bar { height: 14px; background: var(--accent); border-radius: 0 4px 4px 0; min-width: 2px; }
-  .bars .bar.none { background: var(--muted); }
-  .bars .track:hover .bar, .bars .track:focus-visible .bar { opacity: .8; }
-  .bars .val { color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
-  .chart-note { color: var(--muted); font-size: .8rem; margin: 4px 0 0; }
-  .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+    font: 16px/1.55 var(--font-main); -webkit-font-smoothing: antialiased; }
+  a { color: var(--color-secondary); }
+  h1, h2, h3 { font-family: var(--font-header); line-height: 1.15; margin: 0; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
   input, select, textarea, button { font: inherit; color: inherit; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }
+
+  /* Cabecera */
+  #header { position: sticky; top: 0; z-index: 20; background: var(--surface);
+    border-bottom: 1px solid var(--border); }
+  .header-container { display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    max-width: 1200px; margin: 0 auto; padding: 12px 16px; }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+  .logo-img { width: 40px; height: 40px; }
+  .logo-mark { width: 40px; height: 40px; border-radius: 10px; display: grid; place-items: center;
+    background: var(--color-primary); color: #fff; font-size: 1.1rem; }
+  .logo-text { font-weight: 800; letter-spacing: .04em; font-size: 1.05rem; }
+  .logo-sub { display: block; font-weight: 400; font-size: .75rem; color: var(--muted); letter-spacing: 0; }
+  .nav-links { display: flex; align-items: center; gap: 22px; }
+  .nav-links a { text-decoration: none; color: var(--text); font-weight: 500; font-size: .95rem; }
+  .nav-links a:hover { color: var(--color-primary); }
+  .btn-nav-highlight { background: var(--color-primary); color: #fff !important; padding: 9px 16px;
+    border-radius: 999px; font-weight: 600 !important; }
+  .btn-nav-highlight:hover { background: var(--color-primary-dark); }
+  @media (max-width: 760px) { .nav-links .nav-hide { display: none; } .nav-links { gap: 12px; } .logo-sub { display: none; } }
+
+  /* Portada */
+  #hero { position: relative; color: var(--on-dark); overflow: hidden;
+    background: linear-gradient(135deg, var(--color-dark) 0%, var(--color-slate) 100%); }
+  #hero::after { content: ""; position: absolute; inset: 0; opacity: .07; pointer-events: none;
+    background-image: radial-gradient(circle at 50% 50%, #fff 2px, transparent 2.5px), radial-gradient(circle at 0 0, #fff 2px, transparent 2.5px);
+    background-size: 28px 28px; }
+  .hero-content { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 64px 16px 56px; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; font-weight: 600; color: var(--on-dark-muted); margin: 0 0 12px; }
+  .title { font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 700; max-width: 820px; }
+  .highlight { color: var(--color-primary); font-style: italic; }
+  .hero-text { font-size: 1.1rem; color: var(--on-dark-muted); max-width: 640px; margin: 16px 0 28px; font-weight: 300; }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 40px; }
+  .stat { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); border-radius: 12px;
+    padding: 14px 16px; backdrop-filter: blur(4px); }
+  .stat b { display: block; font-size: 1.9rem; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .stat span { color: var(--on-dark-muted); font-size: .82rem; }
+
+  /* Botones */
+  .btn-primary, .btn-secondary, .btn-primary-blue, .btn-ghost {
+    display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 11px 20px;
+    font-weight: 600; text-decoration: none; cursor: pointer; border: 2px solid transparent;
+    transition: background .2s, transform .2s, border-color .2s; font-size: .95rem; }
+  .btn-primary { background: var(--color-primary); color: #fff; }
+  .btn-primary:hover { background: var(--color-primary-dark); transform: translateY(-1px); }
+  .btn-primary-blue { background: var(--color-secondary); color: #fff; }
+  .btn-primary-blue:hover { background: var(--color-secondary-dark); transform: translateY(-1px); }
+  .btn-secondary { background: transparent; color: #fff; border-color: rgba(255,255,255,.6); }
+  .btn-secondary:hover { background: rgba(255,255,255,.1); }
+  .btn-ghost { background: var(--surface); color: var(--text); border-color: var(--border); padding: 9px 16px; }
+  .btn-ghost:hover { border-color: var(--color-secondary); color: var(--color-secondary); }
+  button:disabled { opacity: .6; cursor: default; transform: none; }
+
+  /* Secciones */
+  .section { padding: 56px 0; }
+  .section-header { margin-bottom: 24px; }
+  .section-header h2 { font-size: clamp(1.6rem, 3vw, 2.2rem); }
+  .section-header p { color: var(--muted); margin: 10px 0 0; max-width: 720px; }
+  .divider { width: 60px; height: 4px; border-radius: 4px; background: var(--color-primary); margin-top: 14px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+
+  /* Gráfico */
+  .chart-card { padding: 20px 22px; margin-bottom: 24px; }
+  .chart-card h3 { font-size: 1.25rem; }
+  .bars { display: grid; grid-template-columns: minmax(90px, max-content) 1fr; gap: 6px 12px;
+    margin: 16px 0 6px; align-items: center; font-size: .9rem; }
+  .bars .lbl { text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bars .track { display: flex; align-items: center; gap: 8px; min-width: 0; cursor: pointer; padding: 3px 0; border-radius: 4px; }
+  .bars .bar { height: 14px; background: var(--color-secondary); border-radius: 0 4px 4px 0; min-width: 2px; transition: opacity .15s; }
+  .bars .bar.none { background: var(--muted); }
+  .bars .track:hover .bar, .bars .track:focus-visible .bar { opacity: .75; }
+  .bars .val { color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; font-size: .85rem; }
+  .chart-note { color: var(--muted); font-size: .82rem; margin: 6px 0 0; }
+
+  /* Buscador y filtros */
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 14px; margin-bottom: 10px; }
+  .search { position: relative; flex: 1 1 280px; min-width: 0; }
+  .search i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--muted); }
   input[type=search], select, .field input, .field textarea, .field select {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 7px 10px; }
-  input[type=search] { flex: 1 1 260px; min-width: 0; }
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 9px 12px; }
+  input[type=search] { width: 100%; padding-left: 38px; }
+  input:focus, select:focus, textarea:focus { outline: 2px solid var(--color-secondary); outline-offset: 1px; }
   label.check { display: inline-flex; gap: 6px; align-items: center; font-size: .9rem; color: var(--muted); }
-  button { cursor: pointer; border-radius: 6px; padding: 7px 12px; border: 1px solid var(--border);
-    background: var(--surface); }
-  button.primary { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
-  button.link { border: 0; background: none; color: var(--accent); padding: 2px 4px; }
-  .status { font-size: .85rem; color: var(--muted); margin-bottom: 8px; min-height: 1.2em; }
+  .status { font-size: .85rem; color: var(--muted); margin: 0 0 10px; min-height: 1.3em; }
   .status.error { color: var(--err); }
-  .table-wrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+
+  /* Tabla */
+  .table-wrap { overflow-x: auto; }
   table { border-collapse: collapse; width: 100%; }
-  th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
-  th { position: sticky; top: 0; background: var(--surface); font-size: .8rem; color: var(--muted);
-    text-transform: uppercase; letter-spacing: .03em; cursor: pointer; white-space: nowrap; }
-  th[aria-sort] { color: var(--text); }
+  th, td { text-align: left; padding: 11px 10px; border-bottom: 1px solid var(--border); vertical-align: top; font-size: .93rem; }
+  th { position: sticky; top: 0; background: var(--surface); font-size: .74rem; color: var(--muted); font-weight: 600;
+    text-transform: uppercase; letter-spacing: .05em; cursor: pointer; user-select: none; vertical-align: bottom; }
+  th[aria-sort] { color: var(--color-primary); }
+  tbody tr:hover { background: color-mix(in srgb, var(--color-secondary) 5%, transparent); }
   tr:last-child td { border-bottom: 0; }
-  td.code { font-weight: 600; white-space: nowrap; }
-  .chip { display: inline-block; font-size: .75rem; padding: 1px 7px; border-radius: 99px;
-    background: var(--chip); margin: 1px 2px 1px 0; white-space: nowrap; }
+  td.code { font-weight: 700; white-space: nowrap; }
+  .chip { display: inline-block; font-size: .74rem; padding: 2px 9px; border-radius: 99px;
+    background: var(--chip); margin: 1px 3px 1px 0; white-space: nowrap; font-weight: 500; }
   .chip.ok { color: var(--ok); }
   .chip.warn { color: var(--warn); background: var(--warn-bg); }
   .empty { color: var(--muted); font-style: italic; }
   .muted { color: var(--muted); }
-  footer { max-width: 1200px; margin: 24px auto; padding: 0 16px; color: var(--muted); font-size: .8rem; }
+  button.link { border: 0; background: none; color: var(--color-primary); padding: 2px 0; cursor: pointer;
+    font-weight: 600; font-size: .88rem; white-space: nowrap; }
+  button.link:hover { text-decoration: underline; }
+  @media (max-width: 760px) {
+    thead { display: none; }
+    table, tbody, tr, td { display: block; width: 100%; }
+    tbody tr { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+    td { border: 0; padding: 3px 0; display: grid; grid-template-columns: 42% 1fr; gap: 8px; }
+    td::before { content: attr(data-label); color: var(--muted); font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; }
+    td.code { font-size: 1.05rem; grid-template-columns: 1fr; }
+    td.code::before, td.actions-cell::before, td.empty::before { content: none; }
+    td.actions-cell { grid-template-columns: 1fr; padding-top: 6px; }
+    td.empty { grid-template-columns: 1fr; }
+    td.is-empty { display: none; }
+    td .chip { justify-self: start; }
+    .controls select, .controls .btn-ghost { flex: 1 1 100%; justify-content: center; }
+  }
+
+  /* Llamada a la acción */
+  .cta-banner { border-radius: var(--radius); padding: 40px 32px; color: #fff; text-align: center;
+    background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-slate) 100%); }
+  .cta-banner h2 { font-size: clamp(1.5rem, 3vw, 2rem); }
+  .cta-banner p { color: var(--on-dark-muted); max-width: 620px; margin: 12px auto 24px; }
+  .cta-banner .hero-cta { justify-content: center; }
+  .cta-mail { color: #fff; font-weight: 600; }
+
+  /* Pie */
+  footer { background: var(--color-dark); color: var(--on-dark-muted); padding: 48px 0 24px; margin-top: 8px; }
+  .footer-content { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 32px; }
+  .logo-footer { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: 800; letter-spacing: .04em; font-size: 1.05rem; }
+  footer h4 { color: #fff; font-size: .9rem; text-transform: uppercase; letter-spacing: .06em; margin: 0 0 12px; }
+  footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+  footer a { color: var(--on-dark-muted); text-decoration: none; }
+  footer a:hover { color: #fff; }
+  .social-icons { display: flex; gap: 10px; margin-top: 16px; }
+  .social-icons a { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center;
+    background: rgba(255,255,255,.08); color: #fff; }
+  .social-icons a:hover { background: var(--color-primary); }
+  .footer-note { font-size: .82rem; margin-top: 14px; }
+  .footer-bottom { border-top: 1px solid rgba(255,255,255,.1); margin-top: 32px; padding-top: 18px; font-size: .82rem;
+    display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; }
+  @media (max-width: 760px) { .footer-content { grid-template-columns: 1fr; } .section { padding: 40px 0; } .hero-content { padding: 44px 16px 40px; } }
 
   /* Buzón */
-  dialog { border: 1px solid var(--border); border-radius: 10px; padding: 0; width: min(640px, calc(100vw - 32px));
-    background: var(--surface); color: var(--text); }
-  dialog::backdrop { background: rgba(0,0,0,.45); }
-  .dlg-head { padding: 16px 20px 0; }
-  .dlg-head h2 { margin: 0 0 4px; font-size: 1.2rem; }
-  form.proposal { padding: 12px 20px 20px; display: grid; gap: 12px; }
-  .field { display: grid; gap: 4px; }
-  .field > span { font-size: .85rem; color: var(--muted); }
-  .field textarea { min-height: 80px; resize: vertical; }
-  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .newrow { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .actions { display: flex; gap: 8px; justify-content: flex-end; align-items: center; flex-wrap: wrap; }
+  dialog { border: 0; border-radius: var(--radius); padding: 0; width: min(660px, calc(100vw - 32px));
+    background: var(--surface); color: var(--text); box-shadow: 0 30px 80px rgba(0,0,0,.3); }
+  dialog::backdrop { background: rgba(11,16,25,.55); backdrop-filter: blur(2px); }
+  .dlg-head { padding: 22px 24px 0; }
+  .dlg-head h2 { font-size: 1.5rem; }
+  .dlg-head p { color: var(--muted); margin: 6px 0 0; font-size: .92rem; }
+  form.proposal { padding: 16px 24px 24px; display: grid; gap: 14px; }
+  .field { display: grid; gap: 5px; }
+  .field > span { font-size: .85rem; color: var(--muted); font-weight: 500; }
+  .field textarea { min-height: 84px; resize: vertical; }
+  .row2, .newrow { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .actions { display: flex; gap: 10px; justify-content: flex-end; align-items: center; flex-wrap: wrap; }
   .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
-  .notice { font-size: .85rem; padding: 8px 10px; border-radius: 6px; background: var(--warn-bg); color: var(--warn); }
+  .notice { font-size: .85rem; padding: 10px 12px; border-radius: 10px; background: var(--warn-bg); color: var(--warn); margin: 0; }
   .result { font-size: .9rem; }
   .result.ok { color: var(--ok); } .result.error { color: var(--err); }
-  @media (max-width: 640px) {
-    .row2, .newrow { grid-template-columns: 1fr; }
-    th, td { padding: 6px 8px; }
-  }
+  @media (max-width: 640px) { .row2, .newrow { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
-<header>
-  <h1>Instituciones de debate</h1>
-  <p class="sub">Datos leídos en directo de la <a id="sheet-link" target="_blank" rel="noopener">hoja oficial</a>.
-    Si ves un error o falta una institución, usa <b>Proponer cambio</b>: la propuesta llega a la hoja como pendiente de revisión, no se aplica sola.</p>
-  <div class="stats" id="stats"></div>
-  <details class="charts" id="charts" open>
-    <summary>Registros por país</summary>
-    <div class="bars" id="bars" role="list"></div>
-    <p class="chart-note">Calculado en la página a partir de LISTA, con los filtros activos. Pulsa un país para filtrar por él. Las filas con país vacío o «PENDIENTE» van juntas al final.</p>
-  </details>
-  <div class="controls">
-    <input type="search" id="q" placeholder="Buscar código, institución, club, observaciones…" aria-label="Buscar">
-    <select id="f-pais" aria-label="País"><option value="">Todos los países</option></select>
-    <select id="f-ver" aria-label="Verificado">
-      <option value="">Verificado: todos</option><option value="1">Solo verificados</option><option value="0">Solo no verificados</option>
-    </select>
-    <select id="f-esc" aria-label="Escolar">
-      <option value="">Escolar y universitario</option><option value="1">Solo escolares</option><option value="0">Solo no escolares</option>
-    </select>
-    <label class="check"><input type="checkbox" id="f-issues"> Solo con incidencias</label>
-    <button id="btn-tab" title="Copia «Institución, Siglas del club», una por línea, de los registros mostrados">Copiar para Tabbycat</button>
-    <button class="primary" id="btn-new">+ Proponer institución nueva</button>
+<header id="header">
+  <div class="header-container">
+    <a href="https://cmudebarcelona.org/" class="logo" aria-label="CMUDE Barcelona 2027">
+      <img src="logo.svg" alt="" class="logo-img" width="40" height="40" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'logo-mark',innerHTML:'<i class=&quot;fas fa-landmark&quot;></i>'}))">
+      <span class="logo-text">CMUDE BCN<span class="logo-sub">Directorio de instituciones</span></span>
+    </a>
+    <nav class="nav-links" aria-label="Principal">
+      <a href="#directorio" class="nav-hide">Directorio</a>
+      <a href="#contacto" class="nav-hide">Contacto</a>
+      <a href="https://cmudebarcelona.org/" class="nav-hide">CMUDE 2027</a>
+      <a href="#" class="btn-nav-highlight" data-new><i class="fas fa-pen-to-square"></i> Proponer</a>
+    </nav>
   </div>
-  <div class="status" id="status">Cargando datos…</div>
 </header>
+
 <main>
-  <div class="table-wrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
+  <section id="hero">
+    <div class="hero-content">
+      <p class="eyebrow">CMUDE Barcelona 2027</p>
+      <h1 class="title">Instituciones del <span class="highlight">debate en español</span></h1>
+      <p class="hero-text">Directorio de universidades, colegios y clubes de debate con sus códigos y siglas. Si falta tu institución o hay un dato erróneo, propón el cambio: lo revisamos antes de aplicarlo.</p>
+      <div class="hero-cta">
+        <a href="#directorio" class="btn-primary"><i class="fas fa-magnifying-glass"></i> Buscar institución</a>
+        <a href="#" class="btn-secondary" data-new><i class="fas fa-plus"></i> Añadir mi institución</a>
+      </div>
+      <div class="stats" id="stats" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section id="directorio" class="section">
+    <div class="container">
+      <div class="section-header">
+        <h2>Directorio</h2>
+        <div class="divider"></div>
+        <p>Busca por código, siglas, institución o club. Pulsa «Corregir» en cualquier fila para proponer un cambio.</p>
+      </div>
+
+      <div class="card chart-card">
+        <h3>Registros por país</h3>
+        <div class="bars" id="bars" role="list"></div>
+        <p class="chart-note">Calculado con los filtros activos. Pulsa un país para filtrar por él; las filas sin país o con país pendiente van juntas al final.</p>
+      </div>
+
+      <div class="card controls">
+        <div class="search"><i class="fas fa-magnifying-glass"></i>
+          <input type="search" id="q" placeholder="Buscar código, institución, club…" aria-label="Buscar">
+        </div>
+        <select id="f-pais" aria-label="País"><option value="">Todos los países</option></select>
+        <select id="f-ver" aria-label="Verificado">
+          <option value="">Verificado: todos</option><option value="1">Solo verificados</option><option value="0">Solo no verificados</option>
+        </select>
+        <select id="f-esc" aria-label="Escolar">
+          <option value="">Escolar y universitario</option><option value="1">Solo escolares</option><option value="0">Solo no escolares</option>
+        </select>
+        <label class="check"><input type="checkbox" id="f-issues"> Con avisos</label>
+        <button class="btn-ghost" id="btn-tab" title="Copia «Institución, Siglas del club», una por línea, de los registros mostrados"><i class="fas fa-copy"></i> Copiar para Tabbycat</button>
+      </div>
+      <p class="status" id="status" role="status">Cargando datos…</p>
+      <div class="card table-wrap"><table id="tbl"><thead></thead><tbody></tbody></table></div>
+      <p class="chart-note">Los avisos son automáticos (código repetido, país vacío o pendiente, espacios o caracteres invisibles) y no implican un error confirmado. Los datos se actualizan solos cada pocos minutos.</p>
+    </div>
+  </section>
+
+  <section id="contacto" class="section" style="padding-top:0">
+    <div class="container">
+      <div class="cta-banner">
+        <h2>¿Falta tu institución o hay un error?</h2>
+        <p>Envía la propuesta desde el buzón y la revisaremos. Para cualquier otra consulta, escríbenos a <a class="cta-mail" href="mailto:barcelona@cmudebarcelona.org">barcelona@cmudebarcelona.org</a>.</p>
+        <div class="hero-cta">
+          <a href="#" class="btn-primary" data-new><i class="fas fa-pen-to-square"></i> Proponer institución</a>
+          <a href="mailto:barcelona@cmudebarcelona.org?subject=Directorio%20de%20instituciones" class="btn-secondary"><i class="fas fa-envelope"></i> Escribir un email</a>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
+
 <footer>
-  Las “incidencias” son avisos automáticos (código repetido, país vacío o pendiente, espacios o caracteres invisibles…), no errores confirmados.
-  La página se actualiza sola cada pocos minutos y al volver a la pestaña.
+  <div class="container">
+    <div class="footer-content">
+      <div>
+        <div class="logo-footer"><i class="fas fa-landmark"></i> CMUDE BCN</div>
+        <p class="footer-note">Campeonato Mundial Universitario de Debate en Español · Barcelona 2027. Directorio de instituciones mantenido por la organización.</p>
+        <div class="social-icons">
+          <a href="https://www.instagram.com/cmudebarcelona/" target="_blank" rel="noopener noreferrer" aria-label="Instagram @cmudebarcelona"><i class="fab fa-instagram"></i></a>
+          <a href="https://twitter.com/cmudebarcelona" target="_blank" rel="noopener noreferrer" aria-label="X @cmudebarcelona"><i class="fab fa-x-twitter"></i></a>
+          <a href="mailto:barcelona@cmudebarcelona.org" aria-label="Email barcelona@cmudebarcelona.org"><i class="fas fa-envelope"></i></a>
+        </div>
+      </div>
+      <div>
+        <h4>Directorio</h4>
+        <ul>
+          <li><a href="#directorio">Buscar institución</a></li>
+          <li><a href="#" data-new>Proponer alta o cambio</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contacto</h4>
+        <ul>
+          <li><a href="mailto:barcelona@cmudebarcelona.org">barcelona@cmudebarcelona.org</a></li>
+          <li><a href="https://cmudebarcelona.org/">cmudebarcelona.org</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2027 CMUDE Barcelona</span>
+      <span>Datos actualizados automáticamente</span>
+    </div>
+  </div>
 </footer>
 
-<dialog id="dlg">
+<dialog id="dlg" aria-labelledby="dlg-title">
   <div class="dlg-head">
     <h2 id="dlg-title">Proponer cambio</h2>
-    <p class="sub" style="margin:0">Cuanto más concreta la fuente (web oficial del club, acta, persona de contacto), más fácil es aceptarla.</p>
+    <p>Cuanto más concreta la fuente (web oficial del club, acta, persona de contacto), más fácil es aceptarla. Nada se publica sin revisión.</p>
   </div>
   <form class="proposal" id="form" method="dialog" novalidate>
-    <p class="notice" id="no-endpoint" hidden>El buzón aún no está conectado (falta <code>PROPOSALS_URL</code> en <code>config.js</code>). Puedes rellenarlo, pero no se enviará.</p>
+    <p class="notice" id="no-endpoint" hidden>El buzón no está disponible ahora mismo. Puedes escribirnos a <a href="mailto:barcelona@cmudebarcelona.org">barcelona@cmudebarcelona.org</a>.</p>
     <div class="row2">
       <label class="field"><span>Tipo de propuesta</span>
         <select name="tipo" id="p-tipo">
@@ -165,8 +372,8 @@
     <div class="hp" aria-hidden="true"><label>Web <input name="website" tabindex="-1" autocomplete="off"></label></div>
     <div class="actions">
       <span class="result" id="result" role="status"></span>
-      <button type="button" id="btn-cancel">Cancelar</button>
-      <button type="submit" class="primary" id="btn-send">Enviar propuesta</button>
+      <button type="button" class="btn-ghost" id="btn-cancel">Cancelar</button>
+      <button type="submit" class="btn-primary" id="btn-send"><i class="fas fa-paper-plane"></i> Enviar propuesta</button>
     </div>
   </form>
 </dialog>
@@ -178,12 +385,11 @@
   const C = window.CONFIG;
   const $ = (s) => document.querySelector(s);
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const norm = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+  const norm = (s) => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   const isPending = (s) => norm(String(s).trim()) === 'pendiente';
+  const isFilled = (v) => typeof v === 'boolean' || (String(v ?? '').trim() !== '' && String(v).trim() !== '-');
   const countryOf = (r) => String(r.cells[roles.pais] ?? '').trim();
   const INVISIBLE = /[\u00a0\u200b-\u200f\u2028-\u202f\u2060-\u206f\ufeff]/;
-
-  $('#sheet-link').href = `https://docs.google.com/spreadsheets/d/${C.SHEET_ID}/edit`;
 
   let headers = [];     // nombres de columna tal como están en la hoja
   let rows = [];        // [{cells: [...], issues: [...]}]
@@ -425,15 +631,21 @@
       if (!xs !== !ys) return xs ? -1 : 1; // vacíos al final
       return xs.localeCompare(ys, 'es', { sensitivity: 'base' }) * sort.dir;
     });
-    $('#tbl thead').innerHTML = '<tr>' + headers.map((h, i) =>
-      `<th data-col="${i}" ${i === sort.col ? `aria-sort="${sort.dir > 0 ? 'ascending' : 'descending'}"` : ''}>${esc(h)}${i === sort.col ? (sort.dir > 0 ? ' ▲' : ' ▼') : ''}</th>`
-    ).join('') + '<th>Avisos</th><th></th></tr>';
+    // Las columnas vacías en toda la hoja (p. ej. observaciones) no se muestran.
+    const cols = headers.map((_, i) => i).filter((i) => rows.some((r) => isFilled(r.cells[i])));
+    $('#tbl thead').innerHTML = '<tr>' + cols.map((i) =>
+      `<th data-col="${i}" ${i === sort.col ? `aria-sort="${sort.dir > 0 ? 'ascending' : 'descending'}"` : ''}>${esc(headers[i])}${i === sort.col ? (sort.dir > 0 ? ' ▲' : ' ▼') : ''}</th>`
+    ).join('') + '<th>Avisos</th><th><span class="sr-only">Acciones</span></th></tr>';
     $('#tbl tbody').innerHTML = list.length ? list.map((r) => {
       const idx = rows.indexOf(r);
-      return '<tr>' + r.cells.map((v, i) => `<td${i === roles.code ? ' class="code"' : ''}>${renderCell(v, i)}</td>`).join('') +
-        `<td>${r.issues.map((x) => `<span class="chip warn">${esc(x)}</span>`).join('')}</td>` +
-        `<td><button class="link" data-row="${idx}">Proponer cambio</button></td></tr>`;
-    }).join('') : `<tr><td colspan="${headers.length + 2}" class="empty">Ningún registro coincide con los filtros.</td></tr>`;
+      return '<tr>' + cols.map((i) => {
+        const v = r.cells[i];
+        const cls = [i === roles.code && 'code', !isFilled(v) && 'is-empty'].filter(Boolean).join(' ');
+        return `<td data-label="${esc(headers[i])}"${cls ? ` class="${cls}"` : ''}>${renderCell(v, i)}</td>`;
+      }).join('') +
+        `<td data-label="Avisos"${r.issues.length ? '' : ' class="is-empty"'}>${r.issues.map((x) => `<span class="chip warn">${esc(x)}</span>`).join('') || '<span class="muted">—</span>'}</td>` +
+        `<td class="actions-cell"><button class="link" data-row="${idx}" title="Proponer un cambio en ${esc(String(r.cells[roles.code]))}"><i class="fas fa-pen"></i> Corregir</button></td></tr>`;
+    }).join('') : `<tr><td colspan="${cols.length + 2}" class="empty">Ningún registro coincide con los filtros.</td></tr>`;
     renderStats(list);
   }
 
@@ -524,7 +736,9 @@
     dlg.showModal();
   }
 
-  $('#btn-new').addEventListener('click', () => openForm('Alta', null));
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('[data-new]')) { e.preventDefault(); openForm('Alta', null); }
+  });
   $('#btn-cancel').addEventListener('click', () => dlg.close());
   $('#p-tipo').addEventListener('change', syncForm);
   $('#p-campo').addEventListener('change', syncForm);
