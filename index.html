@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Instituciones de debate · CMUDE BCN</title>
+<title>Instituciones de debate BP hispanohablante · CMUDE BCN</title>
 <meta name="description" content="Directorio de instituciones y clubes de debate en español de CMUDE Barcelona 2027, con buzón para proponer altas y correcciones.">
-<meta property="og:title" content="Instituciones de debate · CMUDE Barcelona 2027">
+<meta property="og:title" content="Instituciones de debate BP hispanohablante · CMUDE Barcelona 2027">
 <meta property="og:description" content="Directorio de instituciones y clubes de debate en español, con buzón de correcciones.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,16 +24,27 @@
     --color-dark: #1b2a41;           /* cabecera de portada y pie */
     --color-slate: #364463;
     --color-green: #436d39;
-    --bg: #f6f3ee; --surface: #ffffff; --text: #1d2433; --muted: #6a768c;
+    --bg: #fbfaf7; --surface: #ffffff; --text: #1d2433; --muted: #6a768c;
     --border: #e6e0d6; --chip: #eef1f6;
     --ok: #2f7d4f; --warn: #a15c00; --warn-bg: #fff3e0; --err: #b3261e;
-    --on-dark: #ffffff; --on-dark-muted: rgba(255,255,255,.75);
+    --hero-bg: linear-gradient(160deg, #fffaf4 0%, #fdf0e4 45%, #e8f2fb 100%);
+    --cta-bg: linear-gradient(135deg, #e8f2fb 0%, #fdf0e4 100%);
+    --footer-bg: #f2eee7;
+    --band-ink: #1d2433; --band-muted: #55627a; --band-line: rgba(27, 42, 65, .12);
+    --band-tile: rgba(255, 255, 255, .85); --band-dot: #d9622b; --band-soft: rgba(27, 42, 65, .06);
+    --btn2-ink: var(--color-secondary);
     --shadow: 0 10px 30px rgba(27, 42, 65, .08);
     --radius: 14px;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --bg: #11161f; --surface: #19202c; --text: #e9edf3; --muted: #9aa5b8;
+      --hero-bg: linear-gradient(135deg, #0b1019 0%, #364463 100%);
+      --cta-bg: linear-gradient(135deg, #1f3550 0%, #2b3a57 100%);
+      --footer-bg: #0b1019;
+      --band-ink: #ffffff; --band-muted: rgba(255,255,255,.75); --band-line: rgba(255,255,255,.14);
+      --band-tile: rgba(255,255,255,.08); --band-dot: #ffffff; --band-soft: rgba(255,255,255,.08);
+      --btn2-ink: #ffffff;
       --border: #2b3445; --chip: #232c3b;
       --color-primary: #ef7a45; --color-primary-dark: #f08d5e;
       --color-secondary: #7fa9d6; --color-secondary-dark: #9bbce0;
@@ -44,6 +55,12 @@
   }
   :root[data-theme="dark"] {
     --bg: #11161f; --surface: #19202c; --text: #e9edf3; --muted: #9aa5b8;
+    --hero-bg: linear-gradient(135deg, #0b1019 0%, #364463 100%);
+    --cta-bg: linear-gradient(135deg, #1f3550 0%, #2b3a57 100%);
+    --footer-bg: #0b1019;
+    --band-ink: #ffffff; --band-muted: rgba(255,255,255,.75); --band-line: rgba(255,255,255,.14);
+    --band-tile: rgba(255,255,255,.08); --band-dot: #ffffff; --band-soft: rgba(255,255,255,.08);
+    --btn2-ink: #ffffff;
     --border: #2b3445; --chip: #232c3b;
     --color-primary: #ef7a45; --color-primary-dark: #f08d5e;
     --color-secondary: #7fa9d6; --color-secondary-dark: #9bbce0;
@@ -81,22 +98,22 @@
   @media (max-width: 760px) { .nav-links .nav-hide { display: none; } .nav-links { gap: 12px; } .logo-sub { display: none; } }
 
   /* Portada */
-  #hero { position: relative; color: var(--on-dark); overflow: hidden;
-    background: linear-gradient(135deg, var(--color-dark) 0%, var(--color-slate) 100%); }
+  #hero { position: relative; color: var(--band-ink); overflow: hidden; background: var(--hero-bg);
+    border-bottom: 1px solid var(--band-line); }
   #hero::after { content: ""; position: absolute; inset: 0; opacity: .07; pointer-events: none;
-    background-image: radial-gradient(circle at 50% 50%, #fff 2px, transparent 2.5px), radial-gradient(circle at 0 0, #fff 2px, transparent 2.5px);
+    background-image: radial-gradient(circle at 50% 50%, var(--band-dot) 2px, transparent 2.5px), radial-gradient(circle at 0 0, var(--band-dot) 2px, transparent 2.5px);
     background-size: 28px 28px; }
   .hero-content { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 64px 16px 56px; }
-  .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; font-weight: 600; color: var(--on-dark-muted); margin: 0 0 12px; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .12em; font-size: .8rem; font-weight: 700; color: var(--color-primary-dark); margin: 0 0 12px; }
   .title { font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 700; max-width: 820px; }
   .highlight { color: var(--color-primary); font-style: italic; }
-  .hero-text { font-size: 1.1rem; color: var(--on-dark-muted); max-width: 640px; margin: 16px 0 28px; font-weight: 300; }
+  .hero-text { font-size: 1.1rem; color: var(--band-muted); max-width: 640px; margin: 16px 0 28px; font-weight: 300; }
   .hero-cta { display: flex; flex-wrap: wrap; gap: 12px; }
   .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 40px; }
-  .stat { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); border-radius: 12px;
+  .stat { background: var(--band-tile); border: 1px solid var(--band-line); border-radius: 12px; box-shadow: var(--shadow);
     padding: 14px 16px; backdrop-filter: blur(4px); }
   .stat b { display: block; font-size: 1.9rem; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
-  .stat span { color: var(--on-dark-muted); font-size: .82rem; }
+  .stat span { color: var(--band-muted); font-size: .82rem; }
 
   /* Botones */
   .btn-primary, .btn-secondary, .btn-primary-blue, .btn-ghost {
@@ -107,8 +124,8 @@
   .btn-primary:hover { background: var(--color-primary-dark); transform: translateY(-1px); }
   .btn-primary-blue { background: var(--color-secondary); color: #fff; }
   .btn-primary-blue:hover { background: var(--color-secondary-dark); transform: translateY(-1px); }
-  .btn-secondary { background: transparent; color: #fff; border-color: rgba(255,255,255,.6); }
-  .btn-secondary:hover { background: rgba(255,255,255,.1); }
+  .btn-secondary { background: transparent; color: var(--btn2-ink); border-color: var(--btn2-ink); }
+  .btn-secondary:hover { background: var(--band-soft); }
   .btn-ghost { background: var(--surface); color: var(--text); border-color: var(--border); padding: 9px 16px; }
   .btn-ghost:hover { border-color: var(--color-secondary); color: var(--color-secondary); }
   button:disabled { opacity: .6; cursor: default; transform: none; }
@@ -181,27 +198,27 @@
   }
 
   /* Llamada a la acción */
-  .cta-banner { border-radius: var(--radius); padding: 40px 32px; color: #fff; text-align: center;
-    background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-slate) 100%); }
+  .cta-banner { border-radius: var(--radius); padding: 40px 32px; color: var(--band-ink); text-align: center;
+    border: 1px solid var(--band-line); background: var(--cta-bg); }
   .cta-banner h2 { font-size: clamp(1.5rem, 3vw, 2rem); }
-  .cta-banner p { color: var(--on-dark-muted); max-width: 620px; margin: 12px auto 24px; }
+  .cta-banner p { color: var(--band-muted); max-width: 620px; margin: 12px auto 24px; }
   .cta-banner .hero-cta { justify-content: center; }
-  .cta-mail { color: #fff; font-weight: 600; }
+  .cta-mail { color: var(--color-secondary); font-weight: 600; }
 
   /* Pie */
-  footer { background: var(--color-dark); color: var(--on-dark-muted); padding: 48px 0 24px; margin-top: 8px; }
+  footer { background: var(--footer-bg); color: var(--band-muted); border-top: 1px solid var(--band-line); padding: 48px 0 24px; margin-top: 8px; }
   .footer-content { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 32px; }
-  .logo-footer { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: 800; letter-spacing: .04em; font-size: 1.05rem; }
-  footer h4 { color: #fff; font-size: .9rem; text-transform: uppercase; letter-spacing: .06em; margin: 0 0 12px; }
+  .logo-footer { display: flex; align-items: center; gap: 10px; color: var(--band-ink); font-weight: 800; letter-spacing: .04em; font-size: 1.05rem; }
+  footer h4 { color: var(--band-ink); font-size: .9rem; text-transform: uppercase; letter-spacing: .06em; margin: 0 0 12px; }
   footer ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
-  footer a { color: var(--on-dark-muted); text-decoration: none; }
-  footer a:hover { color: #fff; }
+  footer a { color: var(--band-muted); text-decoration: none; }
+  footer a:hover { color: var(--color-primary); }
   .social-icons { display: flex; gap: 10px; margin-top: 16px; }
   .social-icons a { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center;
-    background: rgba(255,255,255,.08); color: #fff; }
-  .social-icons a:hover { background: var(--color-primary); }
+    background: var(--band-soft); color: var(--band-ink); }
+  .social-icons a:hover { background: var(--color-primary); color: #fff; }
   .footer-note { font-size: .82rem; margin-top: 14px; }
-  .footer-bottom { border-top: 1px solid rgba(255,255,255,.1); margin-top: 32px; padding-top: 18px; font-size: .82rem;
+  .footer-bottom { border-top: 1px solid var(--band-line); margin-top: 32px; padding-top: 18px; font-size: .82rem;
     display: flex; flex-wrap: wrap; gap: 8px; justify-content: space-between; }
   @media (max-width: 760px) { .footer-content { grid-template-columns: 1fr; } .section { padding: 40px 0; } .hero-content { padding: 44px 16px 40px; } }
 
@@ -245,7 +262,7 @@
   <section id="hero">
     <div class="hero-content">
       <p class="eyebrow">CMUDE Barcelona 2027</p>
-      <h1 class="title">Instituciones del <span class="highlight">debate en español</span></h1>
+      <h1 class="title">Instituciones de debate <span class="highlight">BP hispanohablante</span></h1>
       <p class="hero-text">Directorio de universidades, colegios y clubes de debate con sus códigos y siglas. Si falta tu institución o hay un dato erróneo, propón el cambio: lo revisamos antes de aplicarlo.</p>
       <div class="hero-cta">
         <a href="#directorio" class="btn-primary"><i class="fas fa-magnifying-glass"></i> Buscar institución</a>

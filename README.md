@@ -14,7 +14,7 @@ pestaña **Propuestas** de esa misma hoja.
 ## Diseño
 
 Sigue el estilo de [cmudebarcelona.org](https://cmudebarcelona.org/): tipografías Outfit y
-Playfair Display, cabecera fija, portada oscura, botones redondeados e iconos Font Awesome 6.4.
+Playfair Display, cabecera fija, portada clara, botones redondeados e iconos Font Awesome 6.4.
 Los colores están en variables al principio de `index.html` (`--color-primary`,
 `--color-secondary`, `--color-dark`…); son aproximados hasta copiar los de su `styles.css`.
 
