@@ -236,7 +236,7 @@
       <a href="#directorio" class="nav-hide">Directorio</a>
       <a href="#contacto" class="nav-hide">Contacto</a>
       <a href="https://cmudebarcelona.org/" class="nav-hide">CMUDE 2027</a>
-      <a href="#" class="btn-nav-highlight" data-new><i class="fas fa-pen-to-square"></i> Proponer</a>
+      <a href="#" class="btn-nav-highlight" data-open-form><i class="fas fa-pen-to-square"></i> Proponer</a>
     </nav>
   </div>
 </header>
@@ -249,7 +249,7 @@
       <p class="hero-text">Directorio de universidades, colegios y clubes de debate con sus códigos y siglas. Si falta tu institución o hay un dato erróneo, propón el cambio: lo revisamos antes de aplicarlo.</p>
       <div class="hero-cta">
         <a href="#directorio" class="btn-primary"><i class="fas fa-magnifying-glass"></i> Buscar institución</a>
-        <a href="#" class="btn-secondary" data-new><i class="fas fa-plus"></i> Añadir mi institución</a>
+        <a href="#" class="btn-secondary" data-open-form><i class="fas fa-plus"></i> Añadir mi institución</a>
       </div>
       <div class="stats" id="stats" aria-live="polite"></div>
     </div>
@@ -295,7 +295,7 @@
         <h2>¿Falta tu institución o hay un error?</h2>
         <p>Envía la propuesta desde el buzón y la revisaremos. Para cualquier otra consulta, escríbenos a <a class="cta-mail" href="mailto:barcelona@cmudebarcelona.org">barcelona@cmudebarcelona.org</a>.</p>
         <div class="hero-cta">
-          <a href="#" class="btn-primary" data-new><i class="fas fa-pen-to-square"></i> Proponer institución</a>
+          <a href="#" class="btn-primary" data-open-form><i class="fas fa-pen-to-square"></i> Proponer institución</a>
           <a href="mailto:barcelona@cmudebarcelona.org?subject=Directorio%20de%20instituciones" class="btn-secondary"><i class="fas fa-envelope"></i> Escribir un email</a>
         </div>
       </div>
@@ -319,7 +319,7 @@
         <h4>Directorio</h4>
         <ul>
           <li><a href="#directorio">Buscar institución</a></li>
-          <li><a href="#" data-new>Proponer alta o cambio</a></li>
+          <li><a href="#" data-open-form>Proponer alta o cambio</a></li>
         </ul>
       </div>
       <div>
@@ -737,7 +737,7 @@
   }
 
   document.addEventListener('click', (e) => {
-    if (e.target.closest('[data-new]')) { e.preventDefault(); openForm('Alta', null); }
+    if (e.target.closest('[data-open-form]')) { e.preventDefault(); openForm('Alta', null); }
   });
   $('#btn-cancel').addEventListener('click', () => dlg.close());
   $('#p-tipo').addEventListener('change', syncForm);
