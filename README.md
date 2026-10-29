@@ -19,14 +19,16 @@ pestaña **Propuestas** de esa misma hoja.
 | `config.js` | ID de la hoja, pestaña, URL del buzón y frecuencia de recarga. |
 | `apps-script/Code.gs` | Código del buzón, para pegar en Apps Script de la hoja. |
 
-## 1. Permitir la lectura de la hoja
+## 1. Lectura de la hoja
 
-La hoja tiene que estar compartida como **"Cualquier persona con el enlace: Lector"**
-(Compartir → Acceso general). Si no, la web muestra un aviso y no carga datos.
+La web intenta dos vías, en este orden:
 
-Ojo: eso hace legible **todo el documento** (todas las pestañas) a quien tenga el ID,
-que queda visible en el código de la página. Si alguna pestaña no debe ser pública,
-muévela a otra hoja.
+1. **Lectura directa**, si la hoja está compartida como "Cualquier persona con el enlace: Lector".
+2. **A través del Apps Script del buzón** (`?accion=lista`), que se ejecuta como propietario
+   y solo devuelve la pestaña LISTA. Funciona con la hoja **privada**.
+
+Recomendado: la segunda. Si la hoja es pública, también lo es la pestaña Propuestas,
+con los nombres y emails de quien envía propuestas.
 
 ## 2. Activar el buzón
 
@@ -41,8 +43,9 @@ muévela a otra hoja.
 La pestaña **Propuestas** se crea sola con la primera propuesta. Cada una te llega
 también por correo (desactívalo con `NOTIFY_BY_EMAIL = false` en el script).
 
-Si cambias el script más adelante: **Implementar → Gestionar implementaciones → editar →
-Versión: nueva**, para conservar la misma URL.
+Si cambias el script más adelante: **Implementar → Gestionar implementaciones → lápiz (editar) →
+Versión: Nueva versión → Implementar**, para conservar la misma URL. Guardar el código no basta:
+la URL `/exec` sigue sirviendo la versión anterior hasta que implementas una nueva.
 
 ## 3. Publicar la web (GitHub Pages)
 

@@ -61,8 +61,20 @@ function doPost(e) {
   }
 }
 
-// Permite comprobar en el navegador que el despliegue responde.
-function doGet() {
+const LIST_SHEET = 'LISTA';
+
+// ?accion=lista devuelve la pestaña LISTA para el visualizador (así la hoja
+// puede seguir siendo privada). Sin parámetros, solo confirma que responde.
+function doGet(e) {
+  if (e && e.parameter && e.parameter.accion === 'lista') {
+    const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(LIST_SHEET);
+    if (!sheet) return json({ ok: false, error: 'No existe la pestaña ' + LIST_SHEET });
+    const values = sheet.getDataRange().getValues();
+    const headers = values.shift().map(String);
+    const rows = values.map((row) => row.map((v) =>
+      typeof v === 'boolean' ? v : v instanceof Date ? Utilities.formatDate(v, 'Europe/Madrid', 'yyyy-MM-dd') : String(v)));
+    return json({ ok: true, headers: headers, rows: rows });
+  }
   return json({ ok: true, servicio: 'buzón de instituciones' });
 }
 

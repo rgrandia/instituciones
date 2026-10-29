@@ -198,7 +198,7 @@
       const cb = `__sheetCb${id}`;
       const s = document.createElement('script');
       const done = (fn, v) => { clearTimeout(t); delete window[cb]; s.remove(); fn(v); };
-      const t = setTimeout(() => done(reject, new Error('La hoja no responde. ¿Está compartida como “cualquiera con el enlace puede ver”?')), 15000);
+      const t = setTimeout(() => done(reject, new Error('La hoja no responde.')), 15000);
       window[cb] = (resp) => {
         if (resp.status === 'error') {
           const msg = (resp.errors || []).map((e) => e.detailed_message || e.message).join('; ');
@@ -208,9 +208,40 @@
       };
       const tqx = `out:json;responseHandler:${cb};reqId:${id}`;
       s.src = `https://docs.google.com/spreadsheets/d/${C.SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(C.SHEET_NAME)}&headers=1&tqx=${encodeURIComponent(tqx)}&_=${Date.now()}`;
-      s.onerror = () => done(reject, new Error('No se pudo contactar con Google Sheets.'));
+      // Si la hoja no es pública, Google devuelve una página de acceso en vez del
+      // script: o falla la carga o se carga sin llamar al callback.
+      const notPublic = () => done(reject, new Error('La hoja no es pública.'));
+      s.onerror = notPublic;
+      s.onload = () => setTimeout(() => { if (window[cb]) notPublic(); }, 0);
       document.head.appendChild(s);
     });
+  }
+
+  // Segunda vía: el Apps Script del buzón devuelve LISTA (se ejecuta como el
+  // propietario, así que funciona aunque la hoja sea privada).
+  async function loadViaScript() {
+    const r = await fetch(`${C.PROPOSALS_URL}?accion=lista&_=${Date.now()}`);
+    const out = await r.json();
+    if (!out.ok || !Array.isArray(out.headers)) {
+      throw new Error('El Apps Script no devuelve la lista: actualízalo con la última versión de apps-script/Code.gs.');
+    }
+    return {
+      cols: out.headers.map((h) => ({ label: String(h) })),
+      rows: out.rows.map((row) => ({ c: row.map((v) => ({ v })) })),
+    };
+  }
+
+  async function loadData() {
+    try {
+      return await loadSheet();
+    } catch (err) {
+      if (!C.PROPOSALS_URL) throw new Error(`${err.message} Compártela como “cualquier persona con el enlace: lector” o configura PROPOSALS_URL.`);
+      try {
+        return await loadViaScript();
+      } catch (err2) {
+        throw new Error(`${err.message} ${err2.message}`);
+      }
+    }
   }
 
   function cellValue(c) {
@@ -425,7 +456,7 @@
     if (loading) return;
     loading = true;
     try {
-      ingest(await loadSheet());
+      ingest(await loadData());
       lastLoad = Date.now();
       fillFilters();
       render();
