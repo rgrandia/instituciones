@@ -33,6 +33,18 @@
     padding: 8px 12px; min-width: 110px; }
   .stat b { display: block; font-size: 1.3rem; }
   .stat span { color: var(--muted); font-size: .8rem; }
+  details.charts { background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 14px; margin-bottom: 16px; }
+  details.charts summary { cursor: pointer; font-weight: 600; }
+  .bars { display: grid; grid-template-columns: minmax(90px, max-content) 1fr; gap: 6px 10px;
+    margin: 12px 0 4px; align-items: center; font-size: .85rem; }
+  .bars .lbl { text-align: right; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bars .track { display: flex; align-items: center; gap: 8px; min-width: 0; cursor: pointer; padding: 3px 0; }
+  .bars .bar { height: 14px; background: var(--accent); border-radius: 0 4px 4px 0; min-width: 2px; }
+  .bars .bar.none { background: var(--muted); }
+  .bars .track:hover .bar, .bars .track:focus-visible .bar { opacity: .8; }
+  .bars .val { color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .chart-note { color: var(--muted); font-size: .8rem; margin: 4px 0 0; }
   .controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
   input, select, textarea, button { font: inherit; color: inherit; }
   input[type=search], select, .field input, .field textarea, .field select {
@@ -90,6 +102,11 @@
   <p class="sub">Datos leídos en directo de la <a id="sheet-link" target="_blank" rel="noopener">hoja oficial</a>.
     Si ves un error o falta una institución, usa <b>Proponer cambio</b>: la propuesta llega a la hoja como pendiente de revisión, no se aplica sola.</p>
   <div class="stats" id="stats"></div>
+  <details class="charts" id="charts" open>
+    <summary>Registros por país</summary>
+    <div class="bars" id="bars" role="list"></div>
+    <p class="chart-note">Calculado en la página a partir de LISTA, con los filtros activos. Pulsa un país para filtrar por él. Las filas con país vacío o «PENDIENTE» van juntas al final.</p>
+  </details>
   <div class="controls">
     <input type="search" id="q" placeholder="Buscar código, institución, club, observaciones…" aria-label="Buscar">
     <select id="f-pais" aria-label="País"><option value="">Todos los países</option></select>
@@ -100,6 +117,7 @@
       <option value="">Escolar y universitario</option><option value="1">Solo escolares</option><option value="0">Solo no escolares</option>
     </select>
     <label class="check"><input type="checkbox" id="f-issues"> Solo con incidencias</label>
+    <button id="btn-tab" title="Copia «Institución, Siglas del club», una por línea, de los registros mostrados">Copiar para Tabbycat</button>
     <button class="primary" id="btn-new">+ Proponer institución nueva</button>
   </div>
   <div class="status" id="status">Cargando datos…</div>
@@ -162,6 +180,7 @@
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const norm = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
   const isPending = (s) => norm(String(s).trim()) === 'pendiente';
+  const countryOf = (r) => String(r.cells[roles.pais] ?? '').trim();
   const INVISIBLE = /[\u00a0\u200b-\u200f\u2028-\u202f\u2060-\u206f\ufeff]/;
 
   $('#sheet-link').href = `https://docs.google.com/spreadsheets/d/${C.SHEET_ID}/edit`;
@@ -250,10 +269,13 @@
   function fillFilters() {
     const sel = $('#f-pais');
     const cur = sel.value;
-    const paises = [...new Set(rows.map((r) => String(r.cells[roles.pais] ?? '').trim()))].sort((a, b) => a.localeCompare(b, 'es'));
+    const all = rows.map(countryOf);
+    const paises = [...new Set(all.filter((p) => p && !isPending(p)))].sort((a, b) => a.localeCompare(b, 'es'));
+    const hasNone = all.some((p) => !p || isPending(p));
     sel.innerHTML = '<option value="">Todos los países</option>' +
-      paises.map((p) => `<option value="${p ? esc(p) : '__none__'}">${p ? esc(p) : '(sin país)'}</option>`).join('');
-    sel.value = cur === '__none__' ? (paises.includes('') ? cur : '') : (paises.includes(cur) ? cur : '');
+      paises.map((p) => `<option value="${esc(p)}">${esc(p)}</option>`).join('') +
+      (hasNone ? '<option value="__none__">(sin país o pendiente)</option>' : '');
+    sel.value = cur === '__none__' ? (hasNone ? cur : '') : (paises.includes(cur) ? cur : '');
     $('#f-ver').disabled = roles.ver < 0;
     $('#f-esc').disabled = roles.esc < 0;
     $('#codes').innerHTML = [...new Set(rows.map((r) => String(r.cells[roles.code]).trim()).filter(Boolean))]
@@ -265,7 +287,7 @@
     const pais = $('#f-pais').value, ver = $('#f-ver').value, escol = $('#f-esc').value;
     const onlyIssues = $('#f-issues').checked;
     return rows.filter((r) => {
-      if (pais && String(r.cells[roles.pais] ?? '').trim() !== (pais === '__none__' ? '' : pais)) return false;
+      if (pais === '__none__' ? (countryOf(r) && !isPending(countryOf(r))) : (pais && countryOf(r) !== pais)) return false;
       if (ver && (r.cells[roles.ver] === true) !== (ver === '1')) return false;
       if (escol && (r.cells[roles.esc] === true) !== (escol === '1')) return false;
       if (onlyIssues && !r.issues.length) return false;
@@ -274,19 +296,86 @@
     });
   }
 
+  const pct = (n, d) => (d ? Math.round(100 * n / d) : 0);
+
+  // Todas las cifras salen de las filas mostradas (los filtros activos), no de la hoja.
   function renderStats(list) {
-    const paises = new Set(rows.map((r) => String(r.cells[roles.pais] ?? '').trim()).filter((p) => p && !isPending(p)));
-    const ver = roles.ver >= 0 ? rows.filter((r) => r.cells[roles.ver] === true).length : null;
-    const iss = rows.filter((r) => r.issues.length).length;
+    const n = list.length;
+    const paises = new Set(list.map(countryOf).filter((p) => p && !isPending(p)));
+    const ver = roles.ver >= 0 ? list.filter((r) => r.cells[roles.ver] === true).length : null;
+    const esc_ = roles.esc >= 0 ? list.filter((r) => r.cells[roles.esc] === true).length : null;
+    const sinPais = list.filter((r) => !countryOf(r) || isPending(countryOf(r))).length;
+    const iss = list.filter((r) => r.issues.length).length;
     const items = [
-      [rows.length, 'registros'],
+      [n, n === rows.length ? 'registros' : `de ${rows.length} registros`],
       [paises.size, 'países'],
-      ...(ver != null ? [[`${ver}`, `verificados (${Math.round(100 * ver / (rows.length || 1))} %)`]] : []),
+      ...(ver != null ? [[ver, `verificados (${pct(ver, n)} %)`]] : []),
+      ...(esc_ != null ? [[esc_, `escolares (${pct(esc_, n)} %)`]] : []),
+      [sinPais, 'sin país o pendiente'],
       [iss, 'con incidencias'],
-      ...(list.length !== rows.length ? [[list.length, 'mostrados']] : []),
     ];
-    $('#stats').innerHTML = items.map(([n, l]) => `<div class="stat"><b>${esc(n)}</b><span>${esc(l)}</span></div>`).join('');
+    $('#stats').innerHTML = items.map(([v, l]) => `<div class="stat"><b>${esc(v)}</b><span>${esc(l)}</span></div>`).join('');
+    renderBars(list);
   }
+
+  function renderBars(list) {
+    const counts = new Map();
+    list.forEach((r) => {
+      const p = countryOf(r);
+      const key = !p || isPending(p) ? '' : p;
+      const c = counts.get(key) || { n: 0, ver: 0 };
+      c.n++;
+      if (r.cells[roles.ver] === true) c.ver++;
+      counts.set(key, c);
+    });
+    const entries = [...counts.entries()].sort((a, b) =>
+      (!a[0]) - (!b[0]) || b[1].n - a[1].n || a[0].localeCompare(b[0], 'es'));
+    const max = Math.max(1, ...entries.map(([, c]) => c.n));
+    $('#bars').innerHTML = entries.length ? entries.map(([p, c]) => {
+      const label = p || 'Sin país / pendiente';
+      const verTxt = roles.ver >= 0 ? ` · ${c.ver} verif.` : '';
+      return `<div class="lbl" role="listitem">${esc(label)}</div>` +
+        `<div class="track" tabindex="0" role="button" data-pais="${esc(p || '__none__')}" ` +
+        `title="${esc(label)}: ${c.n} registros (${pct(c.n, list.length)} %)${esc(verTxt)}" aria-label="${esc(label)}: ${c.n} registros${esc(verTxt)}. Filtrar">` +
+        `<div class="bar${p ? '' : ' none'}" style="width:${(100 * c.n / max).toFixed(1)}%"></div><span class="val">${c.n}${esc(verTxt)}</span></div>`;
+    }).join('') : '<div class="lbl"></div><div class="empty">Sin datos</div>';
+  }
+
+  function pickCountry(e) {
+    const t = e.target.closest('.track[data-pais]');
+    if (!t || (e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ')) return;
+    e.preventDefault();
+    const sel = $('#f-pais');
+    sel.value = sel.value === t.dataset.pais ? '' : t.dataset.pais;
+    render();
+  }
+  $('#bars').addEventListener('click', pickCountry);
+  $('#bars').addEventListener('keydown', pickCountry);
+
+  // Lista para importar instituciones en Tabbycat: «Institución, Siglas del club».
+  // Si falta la institución se usa el nombre del club.
+  $('#btn-tab').addEventListener('click', async () => {
+    const H = (re) => headers.findIndex((h) => re.test(norm(h)));
+    const iClub = H(/^siglas club/), iNombre = H(/^nombre del club/);
+    const lines = filtered().map((r) => {
+      const inst = String(r.cells[roles.inst] ?? '').trim();
+      const name = inst && inst !== '-' ? inst : String(r.cells[iNombre] ?? '').trim();
+      return `${name}, ${String(r.cells[iClub] ?? '').trim()}`;
+    });
+    const text = lines.join('\n');
+    const st = $('#status');
+    try {
+      await navigator.clipboard.writeText(text);
+      st.classList.remove('error');
+      st.textContent = `Copiadas ${lines.length} líneas en formato Tabbycat.`;
+    } catch {
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'instituciones-tabbycat.txt' });
+      a.click();
+      URL.revokeObjectURL(a.href);
+      st.textContent = `No se pudo copiar; se ha descargado un .txt con ${lines.length} líneas.`;
+    }
+  });
 
   function renderCell(v, i) {
     if (typeof v === 'boolean') {

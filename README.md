@@ -7,7 +7,9 @@ pestaña **Propuestas** de esa misma hoja.
 
 - No hay copia de los datos: cada visita (y cada 5 minutos con la página abierta) lee la hoja. Si editas la hoja, la web cambia sola.
 - Las propuestas **nunca** modifican LISTA. Entran como filas "Pendiente" y tú decides.
-- Marca avisos automáticos por fila: código repetido, sin país, sin institución, espacios sobrantes o caracteres invisibles.
+- Marca avisos automáticos por fila: código repetido, sin país o país «PENDIENTE», sin institución, espacios sobrantes o caracteres invisibles.
+- Las estadísticas (totales, % verificados y escolares, registros por país) se calculan en la página a partir de LISTA y siguen los filtros activos. La hoja no necesita pestañas de estadísticas.
+- El botón **Copiar para Tabbycat** copia «Institución, Siglas del club», una línea por registro mostrado, para importar instituciones en Tabbycat (sustituye a la antigua pestaña «Formato para Tab»).
 
 ## Archivos
 
